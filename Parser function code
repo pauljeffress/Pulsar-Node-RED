@@ -1,0 +1,47 @@
+// Based on example at https://nootropicdesign.com/projectlab/2019/09/21/arduino-satellite-communication/
+
+// Iridium injected header
+var ISBD_MO_imei = msg.payload.imei;
+var ISBD_MO_serial = msg.payload.serial;
+var ISBD_MO_momsn = msg.payload.momsn;
+var ISBD_MO_transmit_time = msg.payload.transmit_time;
+var ISBD_MO_iridium_latitude = msg.payload.iridium_latitude;
+var ISBD_MO_iridium_longitude = msg.payload.iridium_longitude;
+var ISBD_MO_iridium_cep = msg.payload.iridium_cep;
+
+// My data blob in hex
+var data = msg.payload.data;
+
+const hexToDecimal = hex => parseInt(hex, 16);
+
+var p = 0;
+var startDelimiter = hexToDecimal("DEAD"); //parseInt(data.substr(p,2), 16);
+p += 2;
+var payloadLength = parseInt(data.substr(p,2), 16);
+p += 2;
+var fmx_last_MO_magic_number  = parseInt(data.substr(p,2), 16);
+p += 2;
+var pf_batt_v = parseInt(data.substr(p,2), 16);
+p += 2;
+var pf_temp = parseInt(data.substr(p,2), 16);
+p += 2;
+var pf_rh = parseInt(data.substr(p,4), 32);
+p += 4;
+
+
+msg.payload.decoded_data = {
+    ISBD_MO_imei:               ISBD_MO_imei,
+    ISBD_MO_serial:             ISBD_MO_serial,
+    ISBD_MO_momsn:              ISBD_MO_momsn,
+    ISBD_MO_transmit_time:      ISBD_MO_transmit_time,
+    ISBD_MO_iridium_latitude:   ISBD_MO_iridium_latitude,
+    ISBD_MO_iridium_longitude:  ISBD_MO_iridium_longitude,
+    ISBD_MO_iridium_cep:        ISBD_MO_iridium_cep,
+    startDelimiter:             startDelimiter,
+    payloadLength:              payloadLength,
+    fmx_last_MO_magic_number:   fmx_last_MO_magic_number,
+    pf_batt_v:                  pf_batt_v,
+    pf_temp:                    pf_temp,
+    pf_rh:                      pf_rh
+}
+return msg;
