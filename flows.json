@@ -1,0 +1,1029 @@
+[
+    {
+        "id": "7204bd12d879a3de",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "bd95713404f23602",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "database",
+        "name": "Influx DB Cloud",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "https://ap-southeast-2-1.aws.cloud2.influxdata.com",
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "864f806d6a0b5999",
+        "type": "inject",
+        "z": "7204bd12d879a3de",
+        "name": "test MO msg injecter",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"imei\":\"300434066114800\",\"device_type\":\"ROCKBLOCK\",\"serial\":\"207003\",\"momsn\":\"473\",\"transmit_time\":\"22-10-17 06:38:20\",\"iridium_latitude\":\"45.7361\",\"iridium_longitude\":\"97.9549\",\"iridium_cep\":\"120.0\",\"data\":\"dead060102002b020a1a0a1a63000000ffff0a1a0a1a0a1a0a1affffff000a1a0a1a0a1a9a0200ffff0a1a0a1a0a1a0a1affffff000a1a0a1a0a1a9a02004200420000004200420000004200000042000000420042004200420042004200420042004200420000004200000042000000420042000000000000004200000042004200420042004200420042004200420042004200420042000000420000004200420000004200000042009c016f088f140101000063000f276602040003000d002a9d63638cd5deeb4b3e2a5af86e000007000000000000009f00ffffffffffffffff42004200420042003c00ffffffffffffffffffffffff42004200420042004200420042004200420042000200beef\"}",
+        "payloadType": "json",
+        "x": 130,
+        "y": 160,
+        "wires": [
+            [
+                "35a6ae63f5c82b16",
+                "6fdb2c76f3420459"
+            ]
+        ]
+    },
+    {
+        "id": "35a6ae63f5c82b16",
+        "type": "debug",
+        "z": "7204bd12d879a3de",
+        "name": "Test MO msg Injected",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 500,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "87670a3adcf5fcd4",
+        "type": "http in",
+        "z": "7204bd12d879a3de",
+        "name": "MO msg From Iridium",
+        "url": "/MO",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 320,
+        "wires": [
+            [
+                "6c648642979314b3",
+                "572db8cac992c9e3",
+                "6fdb2c76f3420459"
+            ]
+        ]
+    },
+    {
+        "id": "6c648642979314b3",
+        "type": "debug",
+        "z": "7204bd12d879a3de",
+        "name": "MO msg Iridium Injected",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 510,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "572db8cac992c9e3",
+        "type": "http response",
+        "z": "7204bd12d879a3de",
+        "name": "HTTP Response",
+        "statusCode": "",
+        "headers": {},
+        "x": 140,
+        "y": 400,
+        "wires": [],
+        "info": "When the RockBlock server sends NodeRED\nan MO msg, it needs to get a HTTP 200\nresponse or it will keep trying to \ndeliver it as per\nhttps://docs.rockblock.rock7.com/reference/receiving-mo-messages-via-http-webhook"
+    },
+    {
+        "id": "6fdb2c76f3420459",
+        "type": "buffer-parser",
+        "z": "7204bd12d879a3de",
+        "name": "MO buffer parser",
+        "data": "payload.data",
+        "dataType": "msg",
+        "specification": "spec",
+        "specificationType": "ui",
+        "items": [
+            {
+                "type": "byte",
+                "name": "startdelim1",
+                "offset": 0,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "byte",
+                "name": "startdelim2",
+                "offset": 1,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "payloadlen",
+                "offset": 2,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int16le",
+                "name": "fmx_last_MO_magic_number",
+                "offset": 4,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "pf_batt_v",
+                "offset": 6,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int16le",
+                "name": "pf_temp",
+                "offset": 8,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int16le",
+                "name": "pf_rh",
+                "offset": 10,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint32le",
+                "name": "pf_uptime_s",
+                "offset": 12,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "pf_charger1_pid",
+                "offset": 16,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "pf_charger1_v",
+                "offset": 18,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int16le",
+                "name": "pf_charger1_i",
+                "offset": 20,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "pf_charger1_vpv",
+                "offset": 22,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "pf_charger1_ppv",
+                "offset": 24,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint8",
+                "name": "pf_charger1_cs",
+                "offset": 26,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint8",
+                "name": "pf_charger1_err",
+                "offset": 27,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "pf_charger1_load",
+                "offset": 28,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int16le",
+                "name": "pf_charger1_il",
+                "offset": 30,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "pf_charger1_h20",
+                "offset": 32,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "pf_charger1_h21",
+                "offset": 34,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "pf_charger1_hsds",
+                "offset": 36,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint8",
+                "name": "pf_charger1_mppt",
+                "offset": 38,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_batt_v",
+                "offset": 170,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int16le",
+                "name": "fmx_temp",
+                "offset": 172,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_rh",
+                "offset": 174,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint32le",
+                "name": "fmx_uptime_s",
+                "offset": 176,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_press",
+                "offset": 180,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int16le",
+                "name": "fmx_watertemp",
+                "offset": 182,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int16le",
+                "name": "fmx_ambientlight",
+                "offset": 184,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint8",
+                "name": "fmx_gps_status",
+                "offset": 186,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint8",
+                "name": "fmx_gps_fix",
+                "offset": 188,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint8",
+                "name": "fmx_gps_siv",
+                "offset": 190,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint32le",
+                "name": "fmx_gps_positiontimestamp",
+                "offset": 192,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int32le",
+                "name": "fmx_gps_lat",
+                "offset": 196,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int32le",
+                "name": "fmx_gps_lon",
+                "offset": 200,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int32le",
+                "name": "fmx_gps_alt",
+                "offset": 204,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int32le",
+                "name": "fmx_gps_gspeed",
+                "offset": 208,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int32le",
+                "name": "fmx_gps_head_motion",
+                "offset": 212,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_gps_pdop",
+                "offset": 216,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_status_flags_a",
+                "offset": 218,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_status_flags_b",
+                "offset": 220,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_status_flags_c",
+                "offset": 222,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_status_flags_d",
+                "offset": 224,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_batt1_v",
+                "offset": 226,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int16le",
+                "name": "fmx_batt1_i",
+                "offset": 228,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_batt2_v",
+                "offset": 230,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "int16le",
+                "name": "fmx_batt2_i",
+                "offset": 232,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16be",
+                "name": "fmx_contact_gnd_int_m_rxd",
+                "offset": 234,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint32le",
+                "name": "fmx_last_ap_heartbeat_unixtime",
+                "offset": 236,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint32le",
+                "name": "fmx_last_heard_pf_unixtime",
+                "offset": 240,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint32le",
+                "name": "fmx_last_heard_sf_unixtime",
+                "offset": 244,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_cmd_resp1",
+                "offset": 248,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_cmd_resp2",
+                "offset": 250,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_cmd_resp3",
+                "offset": 252,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_cmd_resp4",
+                "offset": 254,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_cmd_resp5",
+                "offset": 256,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_cmd_resp6",
+                "offset": 258,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_cmd_resp7",
+                "offset": 260,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_cmd_resp8",
+                "offset": 262,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_cmd_resp9",
+                "offset": 264,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "uint16le",
+                "name": "fmx_cmd_resp10",
+                "offset": 266,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "byte",
+                "name": "checksumbyte1",
+                "offset": 268,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "byte",
+                "name": "checksumbyte2",
+                "offset": 269,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "byte",
+                "name": "enddelim1",
+                "offset": 270,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            },
+            {
+                "type": "byte",
+                "name": "enddelim2",
+                "offset": 271,
+                "length": 1,
+                "offsetbit": 0,
+                "scale": "1",
+                "mask": ""
+            }
+        ],
+        "swap1": "",
+        "swap2": "swap32",
+        "swap3": "",
+        "swap1Type": "swap",
+        "swap2Type": "swap",
+        "swap3Type": "swap",
+        "msgProperty": "MOparams",
+        "msgPropertyType": "str",
+        "resultType": "keyvalue",
+        "resultTypeType": "return",
+        "multipleResult": false,
+        "fanOutMultipleResult": false,
+        "setTopic": true,
+        "outputs": 1,
+        "x": 490,
+        "y": 240,
+        "wires": [
+            [
+                "bffaf72f6d72f9f0",
+                "de200f272425a6bb"
+            ]
+        ],
+        "info": "Simply take the individual bytes from the MO msg and turns them back into\nindividual parameters (Uint16's etc) and save each one individually \nunder msg.MOparams.xxxx. \nIts literally the opposite of the function on the FMX called \nprep_binary_MO_message_locarb().\nIt does not do any translation/scaling/checking or maths at all on the parameters.\nWhatever they were sent as from the boat, is what this function takes and puts \ninto individual parameters.\n\nNote: In a subsequent node all of the individual items under msg.MOparams\nget passed to InfuxDB Cloud.\n"
+    },
+    {
+        "id": "fc7b80a7ed8d6aa6",
+        "type": "e-mail",
+        "z": "7204bd12d879a3de",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "secure": true,
+        "tls": true,
+        "name": "paul.jeffress@gmail.com",
+        "dname": "Pulsar NodeRED",
+        "x": 1450,
+        "y": 160,
+        "wires": [],
+        "info": "This uses my auto.jeffress@gmail.com\ngmail account, but I use an \"App\nPassword\" specifically created for\nthis use here.\n\n\npastmxmghmwadsyk"
+    },
+    {
+        "id": "bffaf72f6d72f9f0",
+        "type": "debug",
+        "z": "7204bd12d879a3de",
+        "name": "after buffer parser",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "36484353e7f19972",
+        "type": "function",
+        "z": "7204bd12d879a3de",
+        "name": "check if MO msg is valid",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 190,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4ba2ed96be273aa9",
+        "type": "change",
+        "z": "7204bd12d879a3de",
+        "name": "Prep Iridium Parameters",
+        "rules": [
+            {
+                "t": "set",
+                "p": "MOparams.iridium_imei",
+                "pt": "msg",
+                "to": "$number(payload.imei)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "MOparams.iridium_momsn",
+                "pt": "msg",
+                "to": "$number(payload.momsn)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "MOparams.iridium_txrx_time",
+                "pt": "msg",
+                "to": "$number(payload.iridium_time)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "MOparams.iridium_latitude",
+                "pt": "msg",
+                "to": "$number(payload.iridium_latitude)*10e7",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "MOparams.iridium_longitude",
+                "pt": "msg",
+                "to": "$number(payload.iridium_longitude)*10e7",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "MOparams.iridium_cep",
+                "pt": "msg",
+                "to": "$number(payload.iridium_cep)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "MOparams.NodeREDtimestamp",
+                "pt": "msg",
+                "to": "",
+                "tot": "date"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$append(MOparams,tags)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1130,
+        "y": 240,
+        "wires": [
+            [
+                "fe172ef40875de41",
+                "c7ad92e4c99686b8",
+                "fc7b80a7ed8d6aa6"
+            ]
+        ],
+        "info": "We do a number of things here.\n\n**1st**\nHere we grab the JSON items that Rock 7\npopulated from Iridium itself e.g.\nimei: \"300434066114800\"\ndevice_type: \"ROCKBLOCK\"\nserial: \"207003\"\nmomsn: \"473\"\ntransmit_time: \"22-10-17 06:38:20\"\niridium_latitude: \"45.7361\"\niridium_longitude: \"97.9549\"\niridium_cep: \"120.0\"\nand we convert them from strings to numbers\nready to be injected into InfuxDB later in \nthe flow.\n\n**2nd**\nWe also grab the timestamp applied to this message\n when it was generated by Rock 7 calling our\n Node-RED webhook.  We take that timestamp\n and put it into msg.MOparams.NodeREDtimestamp\n so we can pass it up to Infux.\n\n **3rd**\n We then use the function $append(MOparams,tags)\n and erase everything that was previously under\n msg.payload and replace it with every field\n that was under msg.MOparams and msg.tags.\n We do this because the subsequent Influx Out\n node simpky takes everything that is in \n msg.payload and uses that to prepare its\n blob that gets sent to Influx.  Everything \nelse under msg.xxx gets ignored by the Influx\nOut node."
+    },
+    {
+        "id": "c7ad92e4c99686b8",
+        "type": "influxdb out",
+        "z": "7204bd12d879a3de",
+        "influxdb": "bd95713404f23602",
+        "name": "",
+        "measurement": "mo_msg_poc",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "d63721d53c9d5782",
+        "bucket": "Pulsar",
+        "x": 1510,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "de200f272425a6bb",
+        "type": "function",
+        "z": "7204bd12d879a3de",
+        "name": "Reformat Iridium Time",
+        "func": "var Data = msg.payload.transmit_time;\nvar data = Data.split(\" \"); // split the string into two at the space.\n\n// save the time bit into a separate string variable.\n// we will work on this later.\nvar time = data[1];\n\n// work on the date bits first\ndata = data[0].split(\"-\");  // split the date YY-MM-DD into its elements\nvar year = \"20\" + data[0];  // as we only get YY, we add 20 so we have a 4 digit year\nvar month = data[1];\nvar day = data[2]\n\n// then work on the time bits.\ntime = time.split(\":\"); // split the time HH:MM:SS into its elements\nvar hours = time[0];\nvar mins = time[1];\nvar secs = time[2];\n\n// then create a Javascript formatted date from the elements\nvar d = new Date(year, month, day, hours, mins, secs);\n\n// the items below just made it easy when I was \n// troubleshooting, but I have commented them out\n// now that its working\n//msg.payload.year = year;\n//msg.payload.month = month;\n//msg.payload.day = day;\n//msg.payload.hours = hours;\n//msg.payload.mins = mins;\n//msg.payload.secs = secs;\n//msg.payload.calcddate = d;\n\n// create a new field in the msg, that contains the \n// epoch form of the date.\nmsg.payload.iridium_time = d.getTime();\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 240,
+        "wires": [
+            [
+                "6f1f93d0059eca15",
+                "4ba2ed96be273aa9"
+            ]
+        ],
+        "info": "In the JSON MO message generated by Rock7, the field\nfrom the iridium network of\nmsg.payload.transmit_time: \"22-10-17 06:38:20\"\nhas the date/time in that readable format string.\n\nBut later in this flow, I need it to be available as a epoch\ntime so I can work with it.  So this Function block\nsimply takes that field and creates another one called\nmsg.payload.iridium_time that is epoch format.\n\nmsg.payload.iridium_time is then used later in the flow to \npopulate a field that gets sent to influx.\n\nI got the majority of the function formula/code from \nsome dude on the web and then modified it as \nit did not work at first."
+    },
+    {
+        "id": "6f1f93d0059eca15",
+        "type": "debug",
+        "z": "7204bd12d879a3de",
+        "name": "time checker",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1090,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "9a241c10f094bd65",
+        "type": "change",
+        "z": "7204bd12d879a3de",
+        "name": "Format MO msg data for Influx",
+        "rules": [
+            {
+                "t": "set",
+                "p": "fields.iridium_imei",
+                "pt": "msg",
+                "to": "$number(payload.imei)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "fields.iridium_momsn",
+                "pt": "msg",
+                "to": "$number(payload.momsn)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "fields.iridium_txrx_time",
+                "pt": "msg",
+                "to": "$number(payload.iridium_time)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "fields.iridium_latitude",
+                "pt": "msg",
+                "to": "$number(payload.iridium_latitude)*10e7",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "fields.iridium_longitude",
+                "pt": "msg",
+                "to": "$number(payload.iridium_longitude)*10e7",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "fields.iridium_cep",
+                "pt": "msg",
+                "to": "$number(payload.iridium_cep)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "fields.fmx_last_MO_magic_number",
+                "pt": "msg",
+                "to": "payload.params.fmx_last_MO_magic_number",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "fields.fmx_batt_v",
+                "pt": "msg",
+                "to": "payload.params.fmx_batt_v",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "fields.fmx_temp",
+                "pt": "msg",
+                "to": "payload.params.fmx_temp",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "fields.fmx_rh",
+                "pt": "msg",
+                "to": "payload.params.fmx_rh",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "fields.timestamp",
+                "pt": "msg",
+                "to": "",
+                "tot": "date"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$append(fields,tags)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1290,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fe172ef40875de41",
+        "type": "debug",
+        "z": "7204bd12d879a3de",
+        "name": "after Prep Iridium Parameters",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1490,
+        "y": 320,
+        "wires": []
+    }
+]
